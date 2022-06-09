@@ -1,5 +1,6 @@
 """Trainer
 """
+from tqdm.auto import tqdm
 
 from modules.metrics import ConfMatrix
 from modules.losses import *

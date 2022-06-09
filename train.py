@@ -128,8 +128,8 @@ if __name__ == '__main__':
     """
     # Train
     n_epochs = config['TRAINER']['n_epochs']
-    pbar = trange(n_epochs, desc='Training..', leave=True)
-    for epoch_index in pbar:
+    tqdm_bar = tqdm(range(n_epochs), desc='Training..', leave=True)
+    for epoch_index in tqdm_bar:
 
         # Set Recorder row
         row_dict = dict()
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         """
         Train
         """
-        pbar.set_description(f"Training.. {epoch_index}/{n_epochs}")
+        tqdm_bar.set_description(f"Training.. {epoch_index}/{n_epochs}")
         logger.info(f"--Train {epoch_index}/{n_epochs}")
         trainer.train(train_l_loader=train_l_loader, train_u_loader=train_u_loader)
         
@@ -153,7 +153,7 @@ if __name__ == '__main__':
         """
         Validation
         """
-        pbar.set_description(f"Validation.. {epoch_index}/{n_epochs}")
+        tqdm_bar.set_description(f"Validation.. {epoch_index}/{n_epochs}")
         logger.info(f"--Val {epoch_index}/{n_epochs}")
         trainer.valid(valid_l_loader=valid_l_loader)
         
@@ -163,7 +163,7 @@ if __name__ == '__main__':
         for metric_str, score in trainer.score_dict.items():
             row_dict[f"val_{metric_str}"] = score
         trainer.clear_history()
-        pbar.update(1)
+        tqdm_bar.update(1)
 
         """
         Record
@@ -185,9 +185,10 @@ if __name__ == '__main__':
             recorder.save_weight(epoch=epoch_index)
             best_row_dict = copy.deepcopy(row_dict)
         
-        if early_stopper.stop == True:
+        if early_stopper.stop:
             logger.info(f"Eearly stopped, coutner {early_stopper.patience_counter}/{config['TRAINER']['early_stopping_patience']}")
             
             if config['LOGGER']['wandb'] == True:
                 wandb.log(best_row_dict)
             break
+    tqdm_bar.close()
