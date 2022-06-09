@@ -1,7 +1,7 @@
-"""학습 스크립트
 """
-from tqdm.auto import tqdm, trange
-
+학습 스크립트
+"""
+from tqdm.auto import tqdm
 from modules.utils import load_yaml, save_yaml, get_logger
 from modules.earlystoppers import EarlyStopper
 from modules.recorders import Recorder
@@ -130,7 +130,6 @@ if __name__ == '__main__':
     n_epochs = config['TRAINER']['n_epochs']
     tqdm_bar = tqdm(range(n_epochs), desc='Training..', leave=True)
     for epoch_index in tqdm_bar:
-
         # Set Recorder row
         row_dict = dict()
         row_dict['epoch_index'] = epoch_index
@@ -163,7 +162,6 @@ if __name__ == '__main__':
         for metric_str, score in trainer.score_dict.items():
             row_dict[f"val_{metric_str}"] = score
         trainer.clear_history()
-        tqdm_bar.update(1)
 
         """
         Record
@@ -191,4 +189,6 @@ if __name__ == '__main__':
             if config['LOGGER']['wandb'] == True:
                 wandb.log(best_row_dict)
             break
+
+        tqdm_bar.update(1)
     tqdm_bar.close()
